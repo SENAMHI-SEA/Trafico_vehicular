@@ -75,12 +75,14 @@ def plot_multiple_stations(df_pivot, midnights, routes, save_path=None, ymin=Non
             continue
 
         sns.lineplot(x=df_pivot['date'], y=df_pivot[route], ax=ax, marker='o', color='blue')
-        ax.set_title(route, fontsize=12, weight='bold')
-        ax.set_ylabel("Tiempo de demora (min)", fontsize=12, weight='bold')
-        ax.set_xlabel("Fecha y hora", fontsize=12, weight='bold')
+        ax.set_title(route, fontsize=16, weight='bold')
+        ax.set_ylabel("Tiempo de demora (min)", fontsize=16, weight='bold')
+        ax.set_xlabel("Fecha y hora", fontsize=16, weight='bold')
         ax.xaxis.set_major_formatter(DateFormatter('%d-%b %H:%M'))
         ax.tick_params(axis='x', labelrotation=45)
+        ax.tick_params(axis='both', labelsize=14)
         ax.grid(True)
+        ax.figure.tight_layout()
 
         if ymin is not None and ymax is not None:
             plt.ylim(ymin, ymax)
@@ -92,7 +94,7 @@ def plot_multiple_stations(df_pivot, midnights, routes, save_path=None, ymin=Non
         fig.delaxes(axes[j])
 
     if save_path:
-        plt.savefig(save_path, format='jpg', dpi=300)
+        plt.savefig(save_path, format='jpg', dpi=300, bbox_inches='tight')
         print(f"[Info] Panel guardado en: {save_path}")
     plt.tight_layout()
     plt.show()
@@ -123,21 +125,24 @@ if __name__ == "__main__":
 
 
 def plot_single_station(df_pivot, midnights, route_name, save_path=None):
-    plt.figure(figsize=(14, 6))
-    sns.lineplot(data=df_pivot, x='date', y=route_name, color='blue', marker='o')
 
-    plt.title(route_name, fontsize=16, weight='bold')
-    plt.xlabel("Fecha y Hora", fontsize=16, weight='bold')
-    plt.ylabel("Tiempo de demora (minutos)", fontsize=16, weight='bold')
-    plt.xticks(rotation=0)
-    plt.grid(True)
-    plt.gca().xaxis.set_major_formatter(DateFormatter('%d-%b %H:%M'))
+    fig, ax = plt.subplots(figsize=(14, 6), constrained_layout=True)
+    sns.lineplot(data=df_pivot, x='date', y=route_name, color='blue', marker='o', ax=ax)
+    ax.set_title(route_name, fontsize=18, weight='bold')
+    ax.set_xlabel("Fecha y Hora", fontsize=16, weight='bold', labelpad=10)
+    ax.set_ylabel("Tiempo de demora (minutos)", fontsize=16, weight='bold', labelpad=12)
+    ax.xaxis.set_major_formatter(DateFormatter('%d-%b %H:%M'))
+    plt.setp(ax.get_xticklabels(), rotation=0, ha='center')
 
     for m in midnights:
-        plt.axvline(x=m, color='red', linestyle='dashed', linewidth=0.8)
+        ax.axvline(x=m, color='red', linestyle='--', linewidth=0.8)
+        
+    ax.tick_params(axis='x', labelsize=15, pad=6)
+    ax.tick_params(axis='y', labelsize=15, pad=8)
+    ax.grid(True, linestyle='--', alpha=0.6)
 
     if save_path:
-        plt.savefig(save_path, format='jpg', dpi=300)
+        fig.savefig(save_path, format='jpg', dpi=300, bbox_inches='tight')
         print(f"[Info] Gráfico guardado en: {save_path}")
 
     plt.tight_layout()
@@ -168,6 +173,7 @@ def main_individual():
 
 if __name__ == "__main__":
     main_individual()  
+
 
 
 
